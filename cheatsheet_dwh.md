@@ -1,3 +1,15 @@
+# Cheat Sheet: Virtual Environment Python
+## Membuat virtual environment bernama "env"
+python3 -m venv env 
+
+## Mengaktifkannya
+source env/bin/activate
+
+## Mematikan venv
+deactivate
+
+
+
 # Cheat Sheet: PostgreSQL + Docker — Project SNJ
 
 Referensi cepat perintah yang dipakai sehari-hari untuk project data warehouse ini.
@@ -59,32 +71,26 @@ Semua perintah `docker compose` dijalankan dari folder `dwh_project` (tempat `do
 ## 5. Query Dasar (SQL Standar, Sama di Manapun)
 
 ```sql
--- Lihat semua data di suatu tabel
-SELECT * FROM warehouse.dim_vendor;
+-- Matikan pager dulu biar tidak perlu tekan 'q' terus
+\pset pager off
 
--- Lihat data dengan filter
-SELECT * FROM warehouse.fact_vendor_transaksi WHERE tanggal = '2026-08-01';
+-- Lihat semua tabel yang ada di schema warehouse
+\dt warehouse.*
 
--- Hitung jumlah baris
-SELECT COUNT(*) FROM warehouse.fact_vendor_transaksi;
+-- Lihat semua isi datanya
+SELECT * FROM warehouse.fact_produk_latihan;
 
--- Tambah data manual (untuk testing)
-INSERT INTO warehouse.dim_vendor (vendor_code, vendor_name)
-VALUES ('VDR001', 'PT Contoh Sejahtera');
+-- Hitung berapa total baris yang ada
+SELECT COUNT(*) FROM warehouse.fact_produk_latihan;
 
--- Update data
-UPDATE warehouse.dim_vendor
-SET vendor_name = 'PT Contoh Sejahtera Abadi'
-WHERE vendor_code = 'VDR001';
+-- Lihat cuma beberapa kolom tertentu, lebih ringkas dibanding SELECT *
+SELECT natural_key, title, harga, kategori FROM warehouse.fact_produk_latihan;
 
--- Hapus data
-DELETE FROM warehouse.dim_vendor WHERE vendor_code = 'VDR001';
+-- Keluar setelah selesai
+\q
 
--- Join antar tabel (fact + dimension)
-SELECT f.tanggal, v.vendor_name, f.nilai
-FROM warehouse.fact_vendor_transaksi f
-JOIN warehouse.dim_vendor v ON f.vendor_id = v.vendor_id
-LIMIT 10;
+-- Hapus semua data tapi tabel tuetap ada
+TRUNCATE TABLE warehouse.fact_produk_latihan;
 ```
 
 ---
@@ -128,3 +134,6 @@ docker compose stop           # data aman tersimpan, container berhenti
 - **`docker compose down -v`** menghapus data PERMANEN — jangan dipakai sembarangan setelah ada data penting tersimpan. Gunakan `docker compose stop` untuk mematikan sementara.
 - Sebelum keluar dari `psql`, pastikan sudah selesai mengetik query (tidak sedang di tengah statement yang belum ada `;`-nya).
 - Nama container (`snj-dwh-postgres`) dipakai untuk perintah `docker exec`/`docker logs`. Nama service (`postgres`) dipakai kalau container lain (misal pgAdmin/Airflow) perlu connect ke database ini.
+- Jika suatu saat Anda sudah selesai mengerjakan proyek ini dan ingin membebaskan memori laptop, Anda tinggal mematikan kontainer Docker-nya dengan perintah:
+# Menghapus semua kontainer dan jaringan yang dibuat oleh file yaml
+docker compose down -v

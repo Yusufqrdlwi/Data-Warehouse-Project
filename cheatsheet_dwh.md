@@ -137,3 +137,9 @@ docker compose stop           # data aman tersimpan, container berhenti
 - Jika suatu saat Anda sudah selesai mengerjakan proyek ini dan ingin membebaskan memori laptop, Anda tinggal mematikan kontainer Docker-nya dengan perintah:
 # Menghapus semua kontainer dan jaringan yang dibuat oleh file yaml
 docker compose down -v
+
+# API Endpoint Project Ini
+## Cara Menjalankan API
+python3 manage.py runserver 0.0.0.0:8000
+
+http://172.16.3.160:8000/api/transactions_seeder/

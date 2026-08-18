@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('posts/', views.get_posts, name='get-posts'),
+    path('transactions_seeder/', views.get_posts, name='get-posts'),
 ]

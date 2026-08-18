@@ -3,20 +3,16 @@ services:
     image: postgres:18
     container_name: snj-dwh-postgres
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: datawarehouse
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5432:5432"
     volumes:
       - snj_pgdata:/var/lib/postgresql
-    networks:
-      - dwh_network
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD", "pg_isready", "-U", "admin"]
       interval: 5s
       retries: 5
 
@@ -24,20 +20,16 @@ services:
     image: dpage/pgadmin4:latest
     container_name: snj-dwh-pgadmin
     restart: unless-stopped
-    env_file:
-      - .env
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "${PGADMIN_PORT:-8081}:80"
+      - "8081:80"
     depends_on:
       - postgres
-    networks:
-      - dwh_network
 
   airflow-init:
-    image: apache/airflow:3.3.1
+    image: apache/airflow:2.7.1
     container_name: snj-dwh-airflow-init
     depends_on:
       postgres:
@@ -45,38 +37,35 @@ services:
     environment: &airflow-common-env
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://admin:adminpassword@postgres:5432/datawarehouse
       _PIP_ADDITIONAL_REQUIREMENTS: "requests psycopg2-binary"
     volumes:
       - ./dags:/opt/airflow/dags
-    command: airflow db migrate
-    networks:
-      - dwh_network
+    command:
+      - bash
+      - -c
+      - |
+        airflow db migrate &&
+        airflow users create --username admin --password admin --firstname Ridho --lastname Admin --role Admin --email admin@example.com
 
-  airflow-api-server:
-    image: apache/airflow:3.3.1
+  airflow-webserver:
+    image: apache/airflow:2.7.1
     container_name: snj-dwh-airflow-web
     restart: unless-stopped
-    environment: 
-      <<: *airflow-common-env
-      AIRFLOW__CORE__AUTH_BACKEND: "airflow.auth.managers.none.auth_manager"
+    environment: *airflow-common-env
     ports:
       - "8082:8080"
     volumes:
       - ./dags:/opt/airflow/dags
-    command: api-server
+    command: webserver
     depends_on:
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - dwh_network
 
   airflow-scheduler:
-    image: apache/airflow:3.3.1
+    image: apache/airflow:2.7.1
     container_name: snj-dwh-airflow-scheduler
     restart: unless-stopped
-    env_file:
-      - .env
     environment: *airflow-common-env
     volumes:
       - ./dags:/opt/airflow/dags
@@ -84,12 +73,6 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
-    networks:
-      - dwh_network
 
 volumes:
   snj_pgdata:
-
-networks:
-  dwh_network:
-    driver: bridge

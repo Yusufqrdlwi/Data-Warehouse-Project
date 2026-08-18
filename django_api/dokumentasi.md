@@ -8,7 +8,7 @@ pip install django djangorestframework
 django-admin startproject core .
 
 ## Membuat app bernama 'api'
-python manage.py startapp api
+python3 manage.py startapp api
 
 # Menjalankan django api di laptop agar bisa diakses laptop lain melalui wifi
-python manage.py runserver 0.0.0.0:8000
+python3 manage.py runserver 0.0.0.0:8000

@@ -19,5 +19,5 @@ if __name__ == "__main__":
     print("="*50)
     print(f"🌐 IP Address Lokal Anda : {ip_lokal}")
     print("="*50)
-    print(f"Berikan URL ini ke teman Anda untuk dites di Postman:\nhttp://{ip_lokal}:8000/api/walmart/")
+    print(f"Berikan URL ini ke teman Anda untuk dites di Postman:\nhttp://{ip_lokal}:8000/api/transactions_seeder/")
     print("="*50)

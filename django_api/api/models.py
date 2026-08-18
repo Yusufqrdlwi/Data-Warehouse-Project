@@ -9,4 +9,4 @@ class ApiPost(models.Model):
 
     class Meta:
         managed = False 
-        db_table = 'api_posts'
+        db_table = 'transactions'

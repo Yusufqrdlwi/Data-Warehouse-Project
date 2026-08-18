@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'snj_data_warehouse',    # Sesuaikan dengan POSTGRES_DB di docker-compose
-        'USER': 'snj_admin',            # Sesuaikan dengan POSTGRES_USER
-        'PASSWORD': 'sd',# Sesuaikan dengan POSTGRES_PASSWORD
-        'HOST': '127.0.0.1',        # Mengarah ke Docker yang diekspos ke Mac
+        'NAME': 'datawarehouse',    
+        'USER': 'admin',         
+        'PASSWORD': 'adminpassword',  
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }

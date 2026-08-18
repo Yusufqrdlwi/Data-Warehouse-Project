@@ -6,7 +6,7 @@ from .serializers import ApiPostSerializer
 @api_view(['GET'])
 def get_posts(request):
     try:
-        # Menarik data dari tabel api_posts di Postgres
+        # Menarik data dari tabel transactionss di Postgres
         posts = ApiPost.objects.all().order_by('-id')
         serializer = ApiPostSerializer(posts, many=True)
         return Response({

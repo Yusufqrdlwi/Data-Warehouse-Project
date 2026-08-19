@@ -1,12 +1,13 @@
 from django.db import models
+from django.utils import timezone
 
-class ApiPost(models.Model):
+class LivePost(models.Model):
     id = models.IntegerField(primary_key=True)
     user_id = models.IntegerField()
     title = models.CharField(max_length=255)
     body = models.TextField()
-    waktu_penarikan = models.DateTimeField(auto_now_add=True)
+    waktu_penarikan = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        managed = False 
-        db_table = 'transactions'
+        db_table = 'transactions_manual_trigger'  # Ini akan menjadi nama tabel baru Anda di pgAdmin
+
